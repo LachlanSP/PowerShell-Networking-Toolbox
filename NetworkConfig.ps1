@@ -1,3 +1,4 @@
+#Start of Functions Section
 function Get-AdapterSettings{
     $interfaceDetails = Get-NetIPAddress -IPAddress "192.*" # Get interface with IP starting with 192. 
     $netAdapterName = $interfaceDetails.InterfaceAlias # Get name for interface
@@ -15,8 +16,8 @@ function Get-AdapterSettings{
 
 function Get-PublicDetails{
     $publicDetails = Invoke-RestMethod -Uri ('https://ipinfo.io/') -ErrorAction Stop #Query public REST API for IP info
-    $publicAddress = $publicDetails.ip
-    $location = $publicDetails.city + ", " + $publicDetails.region + ", " + $publicDetails.country + ", " + $publicDetails.loc
+    $publicAddress = $publicDetails.ip # WAN IP Address
+    $location = $publicDetails.city + ", " + $publicDetails.region + ", " + $publicDetails.country + ", " + $publicDetails.loc # Concat location details into single output
 
     Write-Host -BackgroundColor Yellow "Public Network Settings:"
     Write-Host "Public IP Address: "$publicAddress
@@ -34,7 +35,7 @@ function Set-DomainProvider{
             $googlePrimary = "8.8.8.8"
             $googleSecondary = "8.8.4.4"
             if(($googlePrimary -like $currentProvider) -or ($googleSecondary -like $currentProvider)){
-                Write-Host "Google is already DNS provider! Exiting..."
+                Write-Host "Google is already DNS provider! Exiting..." # If Google is already provider, skip
             }
             else{
                 Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses ($googlePrimary, $googleSecondary)
@@ -45,7 +46,7 @@ function Set-DomainProvider{
             $cloudflarePrimary = "1.1.1.1"
             $cloudflareSecondary = "1.0.0.1"
             if(($cloudflarePrimary -like $currentProvider) -or ($cloudflareSecondary -like $currentProvider)){
-                Write-Host "Google is already DNS provider! Exiting..."
+                Write-Host "Cloudflare is already DNS provider! Exiting..." # If cloudflare is already provider, skip
             }
             else{
                 Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses ($cloudflarePrimary, $cloudflareSecondary)
@@ -60,7 +61,7 @@ function Set-NewAddress{
     Get-AdapterSettings # Display current interface confinguration
 
     $selection = Read-Host "This will clear and refresh the local IP address provided by your router/DHCP server. Enter Y to continue."
-    if(($selection -eq "Y") -or ($selection -eq "y")){
+    if(($selection -eq "Y") -or ($selection -eq "y")){ #If the user does not explicitly say yes, exit
         Get-WmiObject Win32_NetworkAdapterConfiguration -Filter 'IpEnabled=True AND DhcpEnabled=True' | ForEach-Object{$_.RenewDHCPLease()} | Out-Null
         
     }
@@ -72,8 +73,7 @@ function Get-MACAddress{
 
 }
 
-
-#####
+# End of Functions Section
 
 write-host "Welcome to the Network Management tool! Please select an option below"
 
@@ -98,11 +98,3 @@ switch ($selection) {
         start-sleep 1
     }#Invalid
 }
-
-
-
-
-
-
-
-
