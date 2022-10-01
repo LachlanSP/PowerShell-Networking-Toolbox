@@ -35,6 +35,6 @@ else{
             write-host "Ping failed!" -ForegroundColor Red
         }
     }
+    Write-Host "Operation Complete"
 
-    Write-Host "Operation Complete. Exiting..."
 }

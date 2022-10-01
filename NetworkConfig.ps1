@@ -28,8 +28,8 @@ function Set-DomainProvider{
     write-host "This option will change your DNS provider from default (typically ISP) to Cloudflare or Google"
     $interfaceIndex = (Get-NetIPAddress -IPAddress "192.*").InterfaceIndex # Get interface with IP starting with 192. 
     $currentProvider = ($interfaceIndex | Get-DnsClientServerAddress).ServerAddresses # Get currently configured DNS provider
-    $currentPrimary = $currentProvider[0]
-    $currentSecondary = $currentProvider[1]
+    $currentPrimary = $currentProvider[0] # Primary DNS Address
+    $currentSecondary = $currentProvider[1] # Secondary DNS address
     Write-Host "Current DNS Addresses: " $currentProvider
     $selection = Read-Host "1. Change DNS provider to Google (8.8.8.8)`n2. Change DNS provider to Cloudflare (1.1.1.1)`n3. Exit`n"
 
@@ -46,7 +46,7 @@ function Set-DomainProvider{
                     Clear-DnsClientCache
                     Write-Host "Operation complete. Cloudflare is now the configured DNS provider for the primary network adapter" -ForegroundColor Green
                 }
-                catch{Write-Host "Operation failed - DNS update requires the shell to be run in Adminstrator mode"}
+                catch{Write-Host "Operation failed - DNS update requires the shell to be run in Adminstrator mode"} -ForegroundColor Red    
             }
          }
         2 { # Change DNS to Cloudflare
@@ -61,7 +61,7 @@ function Set-DomainProvider{
                     Clear-DnsClientCache
                     Write-Host "Operation complete. Cloudflare is now the configured DNS provider for the primary network adapter" -ForegroundColor Green
                 }
-                catch{Write-Host "Operation failed - DNS update requires the shell to be run in Adminstrator mode"}
+                catch{Write-Host "Operation failed - DNS update requires the shell to be run in Adminstrator mode"} -ForegroundColor Red
             }   
         }
         Default {Write-Host "Exiting..."}
@@ -92,21 +92,21 @@ write-host "Welcome to the Network Management tool! Please select an option belo
 $selection = Read-Host "1. Display Current Settings `n2. Update DNS Provider`n3. Renew DHCP IP Address`n4. Display IP-MAC Table`n"
 
 switch ($selection) {
-    1 {
+    1 { #Display settings
         Get-AdapterSettings
         Get-PublicDetails
-     }# Display
-    2 {
+     }
+    2 { # Change DNS provider
         Set-DomainProvider
-    } #Settings
-    3 {
+    }
+    3 { # Renew DHCP address
         Set-NewAddress
     }
-    4 {
+    4 { # Display IP-MAC table
         Get-MACAddress
     }
-    Default {
+    Default {#Invalid input - exit
         Write-Host "Invalid option...exiting"
         start-sleep 1
-    }#Invalid
+    }
 }
