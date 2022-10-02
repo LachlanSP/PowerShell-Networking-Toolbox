@@ -44,7 +44,7 @@ function Set-DomainProvider{
                 try{ #Error occurs when attempting to update DNS settings without adminstrator permissions
                     Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses ($googlePrimary, $googleSecondary) -ErrorAction Stop
                     Clear-DnsClientCache
-                    Write-Host "Operation complete. Cloudflare is now the configured DNS provider for the primary network adapter" -ForegroundColor Green
+                    Write-Host "Operation complete. Google is now the configured DNS provider for the primary network adapter" -ForegroundColor Green
                 }
                 catch{Write-Host "Operation failed - DNS update requires the shell to be run in Adminstrator mode"} -ForegroundColor Red    
             }
@@ -76,6 +76,9 @@ function Set-NewAddress{
         Get-WmiObject Win32_NetworkAdapterConfiguration -Filter 'IpEnabled=True AND DhcpEnabled=True' | ForEach-Object{$_.RenewDHCPLease()} | Out-Null
         Write-Host "DHCP lease renewed. DHCP server should provide new IP address if not static." -ForegroundColor Green
         Get-AdapterSettings
+    }
+    else {
+        Write-Host "Exiting..."
     }
 }
 
